@@ -1,10 +1,10 @@
-import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
 import { injectable, inject } from 'tsyringe';
 import User from '../infra/typeorm/entities/User';
 import IUsersRepository from '../repositories/IUsersRepository';
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
   email: string;
@@ -21,6 +21,9 @@ class AuthenticateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ email, password }: IRequest): Promise<IResponse> {
@@ -30,7 +33,10 @@ class AuthenticateUserService {
       throw new AppError('The e-mail/password is invalid.', 401);
     }
 
-    const passwordMathed = await compare(password, user.password);
+    const passwordMathed = await this.hashProvider.compareHash(
+      password,
+      user.password,
+    );
 
     if (!passwordMathed) {
       throw new AppError('The e-mail/password is invalid.', 401);
@@ -42,8 +48,11 @@ class AuthenticateUserService {
       expiresIn,
     });
 
+    const returnedUser = { ...user };
+    delete returnedUser.password;
+
     return {
-      user,
+      user: returnedUser,
       token,
     };
   }
