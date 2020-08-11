@@ -1,5 +1,7 @@
 import AppError from '@shared/errors/AppError';
 import { injectable, inject } from 'tsyringe';
+import { classToClass } from 'class-transformer';
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 import User from '../infra/typeorm/entities/User';
 import IUsersRepository from '../repositories/IUsersRepository';
 import IHashProvider from '../providers/HashProvider/models/IHashProvider';
@@ -18,6 +20,9 @@ class CreateUserService {
 
     @inject('HashProvider')
     private hashProvider: IHashProvider,
+
+    @inject('CacheProvider')
+    private cacheProvider: ICacheProvider,
   ) {}
 
   async execute({ name, email, password }: IRequest): Promise<User> {
@@ -35,11 +40,9 @@ class CreateUserService {
       password: hashPassword,
     });
 
-    const returnedUser = { ...user };
+    await this.cacheProvider.invalidatePrefix('providers-list');
 
-    delete returnedUser.password;
-
-    return returnedUser;
+    return classToClass(user);
   }
 }
 

@@ -1,6 +1,7 @@
 import { sign } from 'jsonwebtoken';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
+import { classToClass } from 'class-transformer';
 import { injectable, inject } from 'tsyringe';
 import User from '../infra/typeorm/entities/User';
 import IUsersRepository from '../repositories/IUsersRepository';
@@ -48,11 +49,8 @@ class AuthenticateUserService {
       expiresIn,
     });
 
-    const returnedUser = { ...user };
-    delete returnedUser.password;
-
     return {
-      user: returnedUser,
+      user: classToClass(user),
       token,
     };
   }
