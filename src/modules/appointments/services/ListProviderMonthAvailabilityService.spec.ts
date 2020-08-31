@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import MockDate from 'mockdate';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import ListProviderMonthAvailabilityService from './ListProviderMonthAvailabilityService';
 
@@ -79,11 +81,15 @@ describe('ListProviderMonthAvailability', () => {
       date: new Date(2020, 4, 21, 8, 0, 0),
     });
 
+    MockDate.set('2020-05-18');
+
     const availability = await listproviderMonthAvailability.execute({
       provider_id: 'user',
       year: 2020,
       month: 5,
     });
+
+    MockDate.reset();
 
     expect(availability).toEqual(
       expect.arrayContaining([
