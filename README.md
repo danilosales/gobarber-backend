@@ -21,7 +21,7 @@
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/danilosales/gobarber-backend?color=%23FF9000">
   </a>
 
-  <img alt="GitHub" src="https://img.shields.io/github/license/danilosales/gobarber-backend?color=%23FF9000">
+  <img alt="GitHub" src="https://img.shields.io/github/license/danilosales/gobarber-backend?color=%23FF9000&max-age=2592000">
 </p>
 
 <p align="center">
